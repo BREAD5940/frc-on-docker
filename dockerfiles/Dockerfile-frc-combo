@@ -1,0 +1,58 @@
+ARG wpilib=main
+ARG advantagescope=v2.0.0-beta-2
+ARG conductor=fix/macos-build
+
+FROM debian:bullseye as builder
+RUN apt update -y
+RUN apt install -y openjdk-11-jdk libgl-dev doxygen vim git gcc \
+    g++ htop wget curl git
+
+# Build and make Conductor DS deb
+WORKDIR /root
+RUN git clone https://github.com/Redrield/Conductor.git
+WORKDIR /root/Conductor
+RUN git checkout ${conductor}
+RUN apt install -y libudev-dev libwebkit2gtk-4.0-dev \
+    libsoup2.4-dev libgtk-3-dev libgdk-pixbuf2.0-dev \
+    libpango1.0-dev libglib2.0-dev pkg-config cmake npm
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH "/root/.cargo/bin:$PATH"
+RUN cargo install cargo-bundle
+RUN cargo update
+RUN sed -i '/web-view/c\web-view = \"0.7.2\"' Cargo.toml
+RUN make setup && make release
+RUN cargo bundle --format deb --release
+RUN cp /root/Conductor/target/release/bundle/deb/*.deb .
+
+# Build and publish archives for WPILib
+WORKDIR /root
+RUN git clone https://github.com/wpilibsuite/allwpilib && cd allwpilib && git checkout ${wpilib}
+WORKDIR /root/allwpilib
+RUN ./gradlew installRoboRioToolchain
+RUN ./gradlew build --build-cache
+RUN ./gradlew publish
+
+FROM debian:bullseye-slim
+
+ARG advantagescope
+
+RUN apt update -y
+RUN apt install -y openjdk-11-jdk libgl-dev doxygen vim git gcc \
+    g++ htop curl wget python3 mesa-utils libgtk-3-0 libgbm1 \
+    iputils-ping net-tools unzip libwebkit2gtk-4.0-37
+
+# Download and install AdvantageScope
+WORKDIR /root
+RUN wget https://github.com/Mechanical-Advantage/AdvantageScope/releases/download/${advantagescope}/advantagescope-linux-arm64-${advantagescope}.zip
+RUN mkdir AdvantageScope
+RUN unzip advantagescope*.zip
+RUN apt install -y ./advantagescope*.deb
+RUN rm ./advantagescope*
+
+# Copy over wpilib build
+COPY --from=builder /root/releases /root/releases
+
+# Install Conductor DS
+COPY --from=builder /root/Conductor/*.deb /root/Conductor/
+RUN apt install /root/Conductor/*.deb
+RUN rm /root/Conductor/*.deb

@@ -1,0 +1,16 @@
+{
+    "image": "frc5940/frc-combo:latest",
+    "mounts": [
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"
+    ],
+    "initializeCommand": "xhost +localhost",
+    "containerEnv": {
+        "DISPLAY": "docker.for.mac.host.internal:0",
+        "LIBGL_ALWAYS_INDIRECT": "1"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": ["ms-vscode.cpptools", "redhat.java", "vscjava.vscode-java-debug"]
+        }
+    }
+}
