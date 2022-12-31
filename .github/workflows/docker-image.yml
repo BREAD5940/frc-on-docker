@@ -44,4 +44,4 @@ jobs:
           platforms: linux/arm64
           push: true
           file: dockerfiles/Dockerfile-wpilib
-          tags: ${{ fromJson(steps.gen_tags.outputs.tags) }}
+          tags: ${{ steps.gen_tags.outputs.tags }}
