@@ -3,7 +3,15 @@ FROM debian:bullseye
 ARG wpilib=2023.1.1-beta-7
 
 RUN apt update -y
-RUN apt install -y openjdk-11-jdk git vim curl wget iputils-ping net-tools
+# Install packages
+RUN apt install -y openjdk-11-jdk git vim curl wget iputils-ping net-tools \
+    # Having python installed makes gradle's outputs print nicely, in addition
+    # to other tools
+    python3 \ 
+    # Used for some GUI apps like ShuffleBoard. Others are
+    # not supported on Mac because XQuartz only supports up to GL 1.4,
+    # and OutlineViewer/Glass/etc. need GL 2.1
+    libatomic1 libgtk-3-0
 
 WORKDIR /root
 
