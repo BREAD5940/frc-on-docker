@@ -6,7 +6,8 @@ on:
       - 'main'
 
 jobs:
-  docker:
+  docker-publish-image:
+    name: Publish Image
     runs-on: ubuntu-latest
     steps:
       -
@@ -25,11 +26,21 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push
+        name: Generate Image Tags
+          id: gen_tags
+          run: |
+            if [[ $GITHUB_REF == 'refs/tags/v'* ]]; then
+              TAGS='["${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:latest","${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:'${GITHUB_REF/refs\/tags\//}'"]'
+            else
+              TAGS='["${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:latest"]'
+            fi
+            echo '::set-output name=tags::'$TAGS
+      -
+        name: Build and Push
         uses: docker/build-push-action@v3
         with:
           context: .
           platforms: linux/arm64
           push: true
-          tags: frc5940/wpilib:latest
           file: dockerfiles/Dockerfile-wpilib
+          tags: ${{ fromJson(steps.gen_tags.outputs.tags) }}
