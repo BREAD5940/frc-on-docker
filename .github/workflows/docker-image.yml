@@ -27,14 +27,14 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Generate Image Tags
-          id: gen_tags
-          run: |
-            if [[ $GITHUB_REF == 'refs/tags/v'* ]]; then
-              TAGS='["${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:latest","${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:'${GITHUB_REF/refs\/tags\//}'"]'
-            else
-              TAGS='["${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:latest"]'
-            fi
-            echo '::set-output name=tags::'$TAGS
+        id: gen_tags
+        run: |
+          if [[ $GITHUB_REF == 'refs/tags/v'* ]]; then
+            TAGS='["${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:latest","${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:'${GITHUB_REF/refs\/tags\//}'"]'
+          else
+            TAGS='["${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:latest"]'
+          fi
+          echo '::set-output name=tags::'$TAGS
       -
         name: Build and Push
         uses: docker/build-push-action@v3
