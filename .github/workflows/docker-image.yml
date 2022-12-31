@@ -30,9 +30,9 @@ jobs:
         id: gen_tags
         run: |
           if [[ $GITHUB_REF == 'refs/tags/v'* ]]; then
-            TAGS='${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:latest\n${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:'${GITHUB_REF/refs\/tags\//}''
+            TAGS='${{ secrets.DOCKERHUB_USERNAME }}/wpilib:latest\n${{ secrets.DOCKERHUB_USERNAME }}/wpilib:'${GITHUB_REF/refs\/tags\//}''
           else
-            TAGS='${{ secrets.DOCKER_HUB_USERNAME }}/wpilib:latest'
+            TAGS='${{ secrets.DOCKERHUB_USERNAME }}/wpilib:latest'
           fi
           echo "tags=$TAGS"
           echo "tags=$TAGS" >> $GITHUB_OUTPUT
