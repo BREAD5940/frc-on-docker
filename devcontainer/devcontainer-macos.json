@@ -1,5 +1,5 @@
 {
-    "image": "frc5940/frc-combo:latest",
+    "image": "frc5940/wpilib:latest",
     "mounts": [
         "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"
     ],
@@ -10,7 +10,10 @@
     },
     "customizations": {
         "vscode": {
-            "extensions": ["ms-vscode.cpptools", "redhat.java", "vscjava.vscode-java-debug"]
+            "extensions": [
+                "ms-vscode.cpptools", "redhat.java",
+                "vscjava.vscode-java-debug", "/root/vscode-wpilib.vsix"
+            ]
         }
     }
 }

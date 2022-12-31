@@ -1,0 +1,19 @@
+FROM debian:bullseye
+
+ARG wpilib=2023.1.1-beta-7
+
+RUN apt update -y
+RUN apt install -y openjdk-11-jdk git vim curl wget iputils-ping net-tools
+
+WORKDIR /root
+
+# Pull cooresponding vscode extension
+RUN wget https://github.com/wpilibsuite/vscode-wpilib/releases/download/v${wpilib}/vscode-wpilib-${wpilib}.vsix
+RUN mv vscode-wpilib*.vsix vscode-wpilib.vsix
+
+# Warm up gradle cache
+# COPY gradlerioproject /root/gradlerioproject
+# WORKDIR /root/gradlerioproject
+# RUN ./gradlew build
+# WORKDIR /root/
+# RUN rm -rf gradlerioproject
